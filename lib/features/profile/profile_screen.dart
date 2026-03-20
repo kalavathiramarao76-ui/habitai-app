@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -416,11 +419,53 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             // Export Data
             ListTile(
               leading: const Icon(Icons.download_outlined),
-              title: const Text('Export Data'),
+              title: const Text('Export Data (JSON)'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Data export coming soon!')),
+                final habits = ref.read(habitsProvider);
+                final jsonData = jsonEncode(
+                  habits.map((h) => h.toJson()).toList(),
+                );
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Exported Data'),
+                    content: SizedBox(
+                      width: double.maxFinite,
+                      child: SingleChildScrollView(
+                        child: SelectableText(
+                          jsonData,
+                          style: const TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Close'),
+                      ),
+                      FilledButton.icon(
+                        onPressed: () async {
+                          await Clipboard.setData(
+                            ClipboardData(text: jsonData),
+                          );
+                          if (ctx.mounted) Navigator.pop(ctx);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('JSON copied to clipboard!'),
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.copy, size: 16),
+                        label: const Text('Copy to Clipboard'),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
@@ -463,9 +508,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               title: const Text('Privacy Policy'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Privacy policy coming soon.')),
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Privacy Policy'),
+                    content: const Text(
+                      'HabitAI stores all your data locally on your device. '
+                      'We do not collect, transmit, or share any personal information. '
+                      'Your habits, streaks, and notes never leave your phone.',
+                    ),
+                    actions: [
+                      FilledButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Got it'),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

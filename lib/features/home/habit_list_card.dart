@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:habit_coach/core/design/app_spacing.dart';
 import 'package:habit_coach/core/design/app_theme.dart';
@@ -76,7 +77,7 @@ class _HabitListCardState extends ConsumerState<HabitListCard>
           color: Colors.transparent,
           child: InkWell(
             borderRadius: AppSpacing.borderRadiusLarge,
-            onTap: _toggleCompletion,
+            onTap: () => context.push('/habit/${widget.habit.id}'),
             child: AnimatedOpacity(
               duration: AppDurations.medium,
               opacity: _isCompleted ? 0.6 : 1.0,

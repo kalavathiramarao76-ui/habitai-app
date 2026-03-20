@@ -8,6 +8,8 @@ import 'package:habit_coach/core/services/storage_service.dart';
 import 'package:habit_coach/core/providers/theme_provider.dart';
 import 'package:habit_coach/features/onboarding/onboarding_screen.dart';
 import 'package:habit_coach/features/home/home_screen.dart';
+import 'package:habit_coach/features/add_habit/add_habit_screen.dart';
+import 'package:habit_coach/features/habit_detail/habit_detail_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +47,14 @@ class HabitAIApp extends ConsumerWidget {
             ),
             GoRoute(
               path: '/add-habit',
-              builder: (context, state) => const _AddHabitPlaceholder(),
+              builder: (context, state) => const AddHabitScreen(),
+            ),
+            GoRoute(
+              path: '/habit/:id',
+              builder: (context, state) {
+                final id = state.pathParameters['id'] ?? '';
+                return HabitDetailScreen(habitId: id);
+              },
             ),
           ],
         );
@@ -94,30 +103,3 @@ class HabitAIApp extends ConsumerWidget {
   }
 }
 
-/// Placeholder screen for Add Habit route.
-class _AddHabitPlaceholder extends StatelessWidget {
-  const _AddHabitPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Habit'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.construction_rounded, size: 48),
-            SizedBox(height: 12),
-            Text('Add Habit screen coming soon'),
-          ],
-        ),
-      ),
-    );
-  }
-}
